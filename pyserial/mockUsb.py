@@ -6,7 +6,7 @@ PORT = "/tmp/ttyE"
 BAUDRATE = 1000000
 SAMPLE_RATE = 44100
 
-ser = serial.Serial(PORT, BAUDRATE)
+ser = serial.Serial(PORT, BAUDRATE, timeout=1)
 
 def callback(indata, frames, time, status):
 

@@ -32,6 +32,11 @@ BUFFER_SIZE = 110
 #5 segundos de buffer (FFT)
 BUFFER_SECONDS3 = 5
 BUFFER_SIZE3 = 110
+ 
+
+#15 segundos de buffer(FFT) 
+BUFFER_SECONDS4 = 15
+BUFFER_SIZE4= 330
 
 
 # buffer circular
@@ -45,6 +50,7 @@ BUFFER_SIZE2 = 330
 
 # buffer 15 segundos
 buffer2 = deque(maxlen=BUFFER_SIZE2)
+buffer4 = deque(maxlen=BUFFER_SIZE4)
 
 recording = False
 ser = serial.Serial(PORT, BAUDRATE, timeout=1)
@@ -73,7 +79,7 @@ def toggle_recording():
             record_start = time.time()
 
 threading.Thread(target=toggle_recording, daemon=True).start()
-threading.Thread(target=compararEvento,args=(buffer2,lock,lambda:lastEventTime), daemon=True).start()
+threading.Thread(target=compararEvento,args=(buffer2,buffer4,lock,lambda:lastEventTime), daemon=True).start()
 
 
 try:
@@ -93,6 +99,7 @@ try:
             buffer.append(mfcc)
             buffer2.append(mfcc)    
             buffer3.append(fftBins)
+            buffer4.append(fftBins)
 
         if recording:
             future_buffer.append(mfcc)
