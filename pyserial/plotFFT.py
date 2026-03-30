@@ -2,16 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('TkAgg')
-import time
 import os
+
 fig, ax = plt.subplots()
-plt.ion()  # modo interativo
+plt.ion()
 plt.show(block=False)
+
 fft_cache = None
 last_mtime = 0
-
-
 img = None
+
+SAMPLE_RATE = 44100
+FFT_SIZE = 2048
+MAX_FREQ = 20000
+PASSO_HZ = 1000
+
+freq_por_bin = SAMPLE_RATE / FFT_SIZE
+max_bin = int(MAX_FREQ / freq_por_bin)
 
 while True:
     if not os.path.exists("fft.npy"):
@@ -27,20 +34,20 @@ while True:
         print(fft_cache.shape)
         print("min", np.min(fft_cache))
         print("max", np.max(fft_cache))
+        print("std total", np.std(fft_cache))
+        print("std frame 0", np.std(np.abs(fft_cache[0])))
+
         last_mtime = mtime
-        print(np.std(fft_cache))
-        print(np.std(np.abs(fft_cache[0])))
+
         fft_mag = np.abs(fft_cache)
         fft_mag = 20 * np.log10(fft_mag + 1e-9)
-        fft_mag = fft_mag[:,:300]
+        fft_mag = fft_mag[:, :max_bin]
+
         vmax = np.max(fft_mag)
         vmin = vmax - 50
 
-
-        print("min pos log", np.min(fft_mag))
-        print("max pos log", np.max(fft_mag))
-        # normalização (opcional, mas melhora visual)
-        #fft_mag = (fft_mag - np.mean(fft_mag)) / (np.std(fft_mag) + 1e-9)
+        print("min log", np.min(fft_mag))
+        print("max log", np.max(fft_mag))
 
         ax.clear()
 
@@ -52,13 +59,19 @@ while True:
             vmin=vmin,
             vmax=vmax
         )
+
         ax.set_title("FFT ao longo do tempo")
         ax.set_xlabel("Tempo (frames)")
-        yticks = np.linspace(0, fft_mag.shape[1], 6)
-        ylabels = [f"{int(y * 44100 / 2048)} Hz" for y in yticks]
+        ax.set_ylabel("Frequência (Hz)")
+
+        freqs_hz = np.arange(0, MAX_FREQ + 1, PASSO_HZ)
+        yticks = freqs_hz / freq_por_bin
         ax.set_yticks(yticks)
-        ax.set_yticklabels(ylabels)
+        ax.set_yticklabels([f"{int(f)}" for f in freqs_hz])
 
         fig.canvas.draw()
         fig.canvas.flush_events()
         plt.pause(0.01)
+
+    else:
+        plt.pause(0.1)

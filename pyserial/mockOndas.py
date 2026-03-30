@@ -4,7 +4,7 @@ import time
 PORT = '/tmp/ttyE'
 BAUD_RATE = 1000000
 SAMPLE_RATE = 44100
-FREQ = 440
+FREQ = 2000
 CHUNK = 1024
 ser = serial.Serial(PORT,BAUD_RATE)
 t = 0

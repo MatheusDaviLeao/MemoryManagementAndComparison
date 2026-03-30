@@ -3,9 +3,9 @@ import time
 import os
 
 def compararEvento(buffer2, buffer4, lock, get_lastEventTime):
-    COOLDOWN = 10
+    COOLDOWN = 15
     PASSO_JANELA = 2
-    LIMIAR_SCORE = 0.4
+    LIMIAR_SCORE = 0.5
     FRAMES_MIN_DETECCAO = 3
 
     detectando = False
